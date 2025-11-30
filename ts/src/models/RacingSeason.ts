@@ -45,8 +45,8 @@ export class RacingSeason {
         return results;
     }
 
-    getResults(): Map<{ racerId: string, racerName: string }, number> {
-        const results = new Map<{ racerId: string, racerName: string }, number>();
+    getResults(): Map<string, number> {
+        const results = new Map<string, number>();
         for (const racer of this._racers) {
             let totalPoints = 0;
             for (const position of this._positions) {
@@ -89,7 +89,7 @@ export class RacingSeason {
                     totalPoints += points;
                 }
             }
-            results.set({ racerId: racer[0], racerName: racer[1] }, totalPoints);
+            results.set(`${racer[0]}|${racer[1]}`, totalPoints);
         }
 
         return new Map([...results.entries()].sort((a, b) => b[1] - a[1]));

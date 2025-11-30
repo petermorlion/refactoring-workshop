@@ -20,8 +20,8 @@ app.get('/api/season', (req: Request, res: Response) => {
     const racers = Array.from(season.getRacers().entries()).map(([id, name]) => ({ id, name }));
     const resultsMap = season.getResults();
     const results = Array.from(resultsMap.entries()).map(([key, points]) => ({
-        racerId: key.racerId,
-        racerName: key.racerName,
+        racerId: key.split('|')[0],
+        racerName: key.split('|')[1],
         points: points
     }));
     
