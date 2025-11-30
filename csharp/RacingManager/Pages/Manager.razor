@@ -1,0 +1,105 @@
+﻿@page "/racing"
+@inject HttpClient Http
+
+<PageTitle>Racing Manager</PageTitle>
+
+<h1>Racing Manager</h1>
+
+<div>
+    <input type="text" @bind-value="_raceName" />
+    <button class="btn btn-primary" @onclick="AddRace">Add Race</button>
+</div>
+
+<div>
+    <input type="text" @bind-value="_racerName" />
+    <input type="checkbox" @bind="_isAI" /> Is AI
+    <button class="btn btn-primary" @onclick="AddRacer">Add Racer</button>
+</div>
+
+<div>
+    <select @bind="@_selectedRaceId">
+        @foreach (var kvp in _racingSeason.Races)
+        {
+            <option value="@kvp.Key">@kvp.Value</option>
+        }
+    </select>
+    <select @bind="@_selectedRacerId">
+        @foreach (var kvp in _racingSeason.Racers)
+        {
+            <option value="@kvp.Key">@kvp.Value</option>
+        }
+    </select>
+    <select @bind="@_selectedPosition">
+        @for (int i = 1; i <= _racingSeason.Racers.Count; i++)
+        {
+            <option value="@i">@i</option>
+        }
+    </select>
+    <button class="btn btn-primary" @onclick="AddPosition">Add Result</button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Racer</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kvp in _racingSeason.GetResults())
+        {
+            <tr>
+                <td>@kvp.Key.racerName</td>
+                <td><span title="@GetRacerResultsTitle(kvp.Key.racerId)">@kvp.Value</span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private RacingSeason _racingSeason = new RacingSeason();
+
+    private string _raceName = "";
+    private void AddRace()
+    {
+        _racingSeason.AddRace(_raceName);
+        _raceName = "";
+    }
+
+    private string _racerName = "";
+    private bool _isAI = false;
+    private void AddRacer()
+    {
+        _racingSeason.AddRacer(_racerName, _isAI);
+        _racerName = "";
+        _isAI = false;
+    }
+
+    private Guid _selectedRaceId;
+    private Guid _selectedRacerId;
+    private int _selectedPosition;
+    private void AddPosition()
+    {
+        if (_selectedRaceId == Guid.Empty)
+        {
+            _selectedRaceId = _racingSeason.Races.First().Key;
+        }
+
+        if (_selectedRacerId == Guid.Empty)
+        {
+            _selectedRacerId = _racingSeason.Racers.First().Key;
+        }
+
+        if (_selectedPosition == 0)
+        {
+            _selectedPosition = 1;
+        }
+
+        _racingSeason.AddResult(_selectedRaceId, _selectedRacerId, _selectedPosition);
+    }
+
+    private string GetRacerResultsTitle(Guid racerId)
+    {
+        return string.Join("\n", _racingSeason.GetRacerPositions(racerId).Select(r => $"{r.raceName}: {r.position}"));
+    }
+}
