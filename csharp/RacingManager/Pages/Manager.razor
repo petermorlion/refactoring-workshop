@@ -18,19 +18,19 @@
 
 <div>
     <select @bind="@_selectedRaceId">
-        @foreach (var kvp in _racingSeason.Races)
+        @foreach (var kvp in _racingSeason.GetRaces())
         {
             <option value="@kvp.Key">@kvp.Value</option>
         }
     </select>
     <select @bind="@_selectedRacerId">
-        @foreach (var kvp in _racingSeason.Racers)
+        @foreach (var kvp in _racingSeason.GetRacers())
         {
             <option value="@kvp.Key">@kvp.Value</option>
         }
     </select>
     <select @bind="@_selectedPosition">
-        @for (int i = 1; i <= _racingSeason.Racers.Count; i++)
+        @for (int i = 1; i <= _racingSeason.GetRacers().Count; i++)
         {
             <option value="@i">@i</option>
         }
@@ -82,12 +82,12 @@
     {
         if (_selectedRaceId == Guid.Empty)
         {
-            _selectedRaceId = _racingSeason.Races.First().Key;
+            _selectedRaceId = _racingSeason.GetRaces().First().Key;
         }
 
         if (_selectedRacerId == Guid.Empty)
         {
-            _selectedRacerId = _racingSeason.Racers.First().Key;
+            _selectedRacerId = _racingSeason.GetRacers().First().Key;
         }
 
         if (_selectedPosition == 0)

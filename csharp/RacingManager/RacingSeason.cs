@@ -2,15 +2,20 @@
 {
     public class RacingSeason
     {
-        public IDictionary<Guid, string> Races { get; init; } = new Dictionary<Guid, string>();
-        public IDictionary<Guid, string> Racers { get; init; } = new Dictionary<Guid, string>();
-        public IDictionary<(Guid raceId, Guid racerId), int> Positions { get; init; } = new Dictionary<(Guid, Guid), int>();
+        private IDictionary<Guid, string> _races { get; init; } = new Dictionary<Guid, string>();
+        private IDictionary<Guid, string> _racers { get; init; } = new Dictionary<Guid, string>();
+        private IDictionary<(Guid raceId, Guid racerId), int> _positions { get; init; } = new Dictionary<(Guid, Guid), int>();
 
         public Guid AddRace(string raceName)
         {
             var raceId = Guid.NewGuid();
-            Races.Add(raceId, raceName);
+            _races.Add(raceId, raceName);
             return raceId;
+        }
+
+        public IDictionary<Guid, string> GetRaces()
+        {
+            return _races;
         }
 
         public Guid AddRacer(string racerName, bool isAI)
@@ -21,23 +26,28 @@
                 racerName = $"{racerName} [AI]";
             }
 
-            Racers.Add(racerId, racerName);
+            _racers.Add(racerId, racerName);
             return racerId;
+        }
+
+        public IDictionary<Guid, string> GetRacers()
+        {
+            return _racers;
         }
 
         public void AddResult(Guid raceId, Guid racerId, int position)
         {
-            Positions[(raceId, racerId)] = position;
+            _positions[(raceId, racerId)] = position;
         }
 
         public IList<(string raceName, int position)> GetRacerPositions(Guid racerId)
         {
             var results = new List<(string raceName, int position)>();
-            foreach (var position in Positions)
+            foreach (var position in _positions)
             {
                 if (position.Key.racerId == racerId)
                 {
-                    results.Add((Races[position.Key.raceId], position.Value));
+                    results.Add((_races[position.Key.raceId], position.Value));
                 }
             }
             return results;
@@ -46,10 +56,10 @@
         public IDictionary<(Guid racerId, string racerName), int> GetResults()
         {
             var results = new Dictionary<(Guid racerId, string racerName), int>();
-            foreach (var racer in Racers)
+            foreach (var racer in _racers)
             {
                 var totalPoints = 0;
-                foreach (var position in Positions)
+                foreach (var position in _positions)
                 {
                     if (position.Key.racerId == racer.Key)
                     {
