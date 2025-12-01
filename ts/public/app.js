@@ -1,0 +1,169 @@
+let currentData = { races: [], racers: [], results: [] };
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadSeasonData();
+});
+
+async function loadSeasonData() {
+    try {
+        const response = await fetch('/api/season');
+        currentData = await response.json();
+
+        updateUI();
+    } catch (error) {
+        console.error('Error loading season data:', error);
+    }
+}
+
+function updateUI() {
+    // Update race dropdown
+    const raceSelect = document.getElementById('raceSelect');
+    raceSelect.innerHTML = '<option value="">Select Race</option>';
+    currentData.races.forEach(race => {
+        const option = document.createElement('option');
+        option.value = race.id;
+        option.textContent = race.name;
+        raceSelect.appendChild(option);
+    });
+
+    // Update racer dropdown
+    const racerSelect = document.getElementById('racerSelect');
+    racerSelect.innerHTML = '<option value="">Select Racer</option>';
+    currentData.racers.forEach(racer => {
+        const option = document.createElement('option');
+        option.value = racer.id;
+        option.textContent = racer.name;
+        racerSelect.appendChild(option);
+    });
+
+    // Update position dropdown
+    const positionSelect = document.getElementById('positionSelect');
+    positionSelect.innerHTML = '<option value="">Position</option>';
+    const racerCount = currentData.racers.length || 10;
+    for (let i = 1; i <= racerCount; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        positionSelect.appendChild(option);
+    }
+
+    // Update results table
+    updateResultsTable();
+}
+
+function updateResultsTable() {
+    const tbody = document.getElementById('resultsTable');
+
+    if (currentData.results.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">No results yet</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+    currentData.results.forEach(result => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.textContent = result.racerName;
+
+        const tdPoints = document.createElement('td');
+        const span = document.createElement('span');
+        span.textContent = result.points;
+        span.style.cursor = 'pointer';
+        span.title = 'Click to see race details';
+        span.onclick = () => showRacerDetails(result.racerId);
+        tdPoints.appendChild(span);
+
+        tr.appendChild(tdName);
+        tr.appendChild(tdPoints);
+        tbody.appendChild(tr);
+    });
+}
+
+async function showRacerDetails(racerId) {
+    try {
+        const response = await fetch(`/api/season/racer/${racerId}/positions`);
+        const positions = await response.json();
+
+        const details = positions.map(p => `${p.raceName}: ${p.position}`).join('\n');
+        alert(details || 'No race results yet');
+    } catch (error) {
+        console.error('Error loading racer positions:', error);
+    }
+}
+
+async function addRace() {
+    const raceName = document.getElementById('raceName').value.trim();
+
+    if (!raceName) {
+        alert('Please enter a race name');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/season/race', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ raceName })
+        });
+
+        if (response.ok) {
+            document.getElementById('raceName').value = '';
+            await loadSeasonData();
+        }
+    } catch (error) {
+        console.error('Error adding race:', error);
+    }
+}
+
+async function addRacer() {
+    const racerName = document.getElementById('racerName').value.trim();
+    const isAI = document.getElementById('isAI').checked;
+
+    if (!racerName) {
+        alert('Please enter a racer name');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/season/racer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ racerName, isAI })
+        });
+
+        if (response.ok) {
+            document.getElementById('racerName').value = '';
+            document.getElementById('isAI').checked = false;
+            await loadSeasonData();
+        }
+    } catch (error) {
+        console.error('Error adding racer:', error);
+    }
+}
+
+async function addResult() {
+    const raceId = document.getElementById('raceSelect').value;
+    const racerId = document.getElementById('racerSelect').value;
+    const position = document.getElementById('positionSelect').value;
+
+    if (!raceId || !racerId || !position) {
+        alert('Please select race, racer, and position');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/season/result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ raceId, racerId, position })
+        });
+
+        if (response.ok) {
+            await loadSeasonData();
+        }
+    } catch (error) {
+        console.error('Error adding result:', error);
+    }
+}

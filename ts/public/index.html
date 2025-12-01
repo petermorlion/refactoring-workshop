@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Racing Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .inline-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .inline-form input[type="text"] {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Racing Manager</h1>
+
+        <div class="section">
+            <div class="inline-form">
+                <input type="text" id="raceName" class="form-control" placeholder="Race name">
+                <button class="btn btn-primary" onclick="addRace()">Add Race</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="inline-form">
+                <input type="text" id="racerName" class="form-control" placeholder="Racer name">
+                <div class="form-check">
+                    <input type="checkbox" id="isAI" class="form-check-input">
+                    <label for="isAI" class="form-check-label">Is AI</label>
+                </div>
+                <button class="btn btn-primary" onclick="addRacer()">Add Racer</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="inline-form">
+                <select id="raceSelect" class="form-select">
+                    <option value="">Select Race</option>
+                </select>
+                <select id="racerSelect" class="form-select">
+                    <option value="">Select Racer</option>
+                </select>
+                <select id="positionSelect" class="form-select" style="width: auto;">
+                    <option value="">Position</option>
+                </select>
+                <button class="btn btn-primary" onclick="addResult()">Add Result</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Results</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Racer</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTable">
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">No results yet</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

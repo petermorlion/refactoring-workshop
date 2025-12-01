@@ -5,56 +5,68 @@
 
 <h1>Racing Manager</h1>
 
-<div>
-    <input type="text" @bind-value="_raceName" />
-    <button class="btn btn-primary" @onclick="AddRace">Add Race</button>
+<div class="section">
+    <div class="inline-form">
+        <input type="text" @bind-value="_raceName" class="form-control" placeholder="Race name" />
+        <button class="btn btn-primary" @onclick="AddRace">Add Race</button>
+    </div>
 </div>
 
-<div>
-    <input type="text" @bind-value="_racerName" />
-    <input type="checkbox" @bind="_isAI" /> Is AI
-    <button class="btn btn-primary" @onclick="AddRacer">Add Racer</button>
+<div class="section">
+    <div class="inline-form">
+        <input type="text" @bind-value="_racerName" class="form-control" placeholder="Racer name">
+        <div class="form-check">
+            <input type="checkbox" id="isAI" @bind="_isAI" class="form-check-input">
+            <label for="isAI" class="form-check-label">Is AI</label>
+        </div>
+        <button class="btn btn-primary" @onclick="AddRacer">Add Racer</button>
+    </div>
 </div>
 
-<div>
-    <select @bind="@_selectedRaceId">
-        @foreach (var kvp in _racingSeason.GetRaces())
-        {
-            <option value="@kvp.Key">@kvp.Value</option>
-        }
-    </select>
-    <select @bind="@_selectedRacerId">
-        @foreach (var kvp in _racingSeason.GetRacers())
-        {
-            <option value="@kvp.Key">@kvp.Value</option>
-        }
-    </select>
-    <select @bind="@_selectedPosition">
-        @for (int i = 1; i <= _racingSeason.GetRacers().Count; i++)
-        {
-            <option value="@i">@i</option>
-        }
-    </select>
-    <button class="btn btn-primary" @onclick="AddPosition">Add Result</button>
+<div class="section">
+    <div class="inline-form">
+        <select @bind="@_selectedRaceId" class="form-select">
+            @foreach (var kvp in _racingSeason.GetRaces())
+            {
+                <option value="@kvp.Key">@kvp.Value</option>
+            }
+        </select>
+        <select @bind="@_selectedRacerId" class="form-select">
+            @foreach (var kvp in _racingSeason.GetRacers())
+            {
+                <option value="@kvp.Key">@kvp.Value</option>
+            }
+        </select>
+        <select @bind="@_selectedPosition" class="form-select" style="width: auto;">
+            @for (int i = 1; i <= _racingSeason.GetRacers().Count; i++)
+            {
+                <option value="@i">@i</option>
+            }
+        </select>
+        <button class="btn btn-primary" @onclick="AddPosition">Add Result</button>
+    </div>
 </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Racer</th>
-            <th>Points</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var kvp in _racingSeason.GetResults())
-        {
+<div class="section">
+    <h3>Results</h3>
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@kvp.Key.racerName</td>
-                <td><span title="@GetRacerResultsTitle(kvp.Key.racerId)">@kvp.Value</span></td>
+                <th>Racer</th>
+                <th>Points</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var kvp in _racingSeason.GetResults())
+            {
+                <tr>
+                    <td>@kvp.Key.racerName</td>
+                    <td><span title="@GetRacerResultsTitle(kvp.Key.racerId)">@kvp.Value</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 @code {
     private RacingSeason _racingSeason = new RacingSeason();
